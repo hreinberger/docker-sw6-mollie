@@ -18,8 +18,8 @@ dev: ## Builds the image and starts the container for development
 
 build: ## Builds the image
 	docker pull dockware/play:latest
-	DOCKER_BUILDKIT=1 docker build --no-cache -t boxblinkracer/mollie-sw6:latest docker/.
+	DOCKER_BUILDKIT=1 docker build --no-cache -t boxblinkracer/mollie-shopware6:latest docker/.
 
 push: ## Pushes the image
 	docker pull dockware/play:latest
-	docker buildx build --no-cache --platform linux/amd64,linux/arm64 -t boxblinkracer/mollie-sw6:latest --push docker/.
+	docker buildx build --no-cache --platform linux/amd64,linux/arm64 -t boxblinkracer/mollie-shopware6:latest --push docker/.
