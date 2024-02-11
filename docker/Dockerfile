@@ -4,7 +4,13 @@ FROM dockware/play:latest
 # so we have a local backup and copy the fixtures to the container
 ADD tests /mollie/fixes/tests
 
+ADD mollie_logs.json /var/www/pimpmylog/config.user.d/mollie_logs.json
+
+ADD mollie_entrypoint.sh /mollie_entrypoint.sh
+
 RUN sudo service mysql start && \
+    echo "MOLLIE_SHOP_DOMAIN=local.mollie.com" >> /var/www/html/.env && \
+    # --------------------------------------------------------------------------------
 	git clone -b master https://github.com/basecom/FixturesPlugin /var/www/html/custom/plugins/FixturesPlugin && \
     cd /var/www/html && composer config repositories.shopware-packages '{ "type": "composer", "url": "https://packages.shopware.com" }' && \
     cd /var/www/html && composer config bearer.packages.shopware.com "test" && \
@@ -30,7 +36,5 @@ RUN sudo service mysql start && \
 	rm -rf /var/www/html/custom/plugins/FixturesPlugin && \
 	sudo rm -rf /mollie && \
     sudo service mysql stop
-
-ADD mollie_entrypoint.sh /mollie_entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/mollie_entrypoint.sh", "/entrypoint.sh"]
