@@ -4,37 +4,23 @@ FROM dockware/play:latest
 # so we have a local backup and copy the fixtures to the container
 ADD tests /mollie/fixes/tests
 
+ADD scripts /scripts
 ADD mollie_logs.json /var/www/pimpmylog/config.user.d/mollie_logs.json
-
 ADD mollie_entrypoint.sh /mollie_entrypoint.sh
 
 RUN sudo service mysql start && \
+    sudo chown 33:33 /scripts -R && sudo chmod 775 /scripts -R && \
+    sudo chown 33:33 /mollie -R && sudo chmod 775 /mollie -R && \
+    # --------------------------------------------------------------------------------
+    cd /scripts && sh prepare-store.sh && \
+    cd /scripts && sh install-plugins.sh && \
+    cd /scripts && sh run-fixtures.sh && \
+    # -------------------------------------------------------------------------------- \
+    # we set a custom webhook domain for the plugin, otherwise payments \
+    # with localhost do not work ;)
     echo "MOLLIE_SHOP_DOMAIN=local.mollie.com" >> /var/www/html/.env && \
     # --------------------------------------------------------------------------------
-	git clone -b master https://github.com/basecom/FixturesPlugin /var/www/html/custom/plugins/FixturesPlugin && \
-    cd /var/www/html && composer config repositories.shopware-packages '{ "type": "composer", "url": "https://packages.shopware.com" }' && \
-    cd /var/www/html && composer config bearer.packages.shopware.com "test" && \
-    cd /var/www/html && composer require store.shopware.com/molliepayments && \
-	cd /var/www/html && php bin/console --no-debug cache:clear && \
-	cd /var/www/html && php bin/console --no-debug plugin:list && \
-	cd /var/www/html && php bin/console --no-debug plugin:refresh && \
-	cd /var/www/html && php bin/console --no-debug plugin:install --activate BasecomFixturePlugin && \
-	cd /var/www/html && php bin/console --no-debug plugin:install --activate MolliePayments && \
-	cd /var/www/html && php bin/console --no-debug cache:clear && \
-    # --------------------------------------------------------------------------------
-    sudo chown 33:33 /mollie -R && \
-    sudo chmod 775 /mollie -R && \
-    mv /mollie/fixes/tests /var/www/html/vendor/store.shopware.com/molliepayments && \
-	mkdir -p /var/www/html/vendor/store.shopware.com/molliepayments/vendor/bin && \
-	touch /var/www/html/vendor/store.shopware.com/molliepayments/vendor/bin/phpunit && \
-    sudo chown 33:33 /var/www/html/vendor/store.shopware.com/molliepayments -R && \
-    sudo chmod 775 /var/www/html/vendor/store.shopware.com/molliepayments -R && \
-	cd /var/www/html && rm -rf var/cache && \
-	cd /var/www/html && php bin/console --no-debug fixture:load:group mollie && \
-    # --------------------------------------------------------------------------------
-	cd /var/www/html && php bin/console --no-debug plugin:uninstall BasecomFixturePlugin && \
-	rm -rf /var/www/html/custom/plugins/FixturesPlugin && \
-	sudo rm -rf /mollie && \
+	cd /scripts && sh post-clean.sh && \
     sudo service mysql stop
 
 ENTRYPOINT ["/bin/bash", "/mollie_entrypoint.sh", "/entrypoint.sh"]
