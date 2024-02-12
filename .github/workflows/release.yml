@@ -34,3 +34,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: boxblinkracer/shopware6-mollie:latest
+          no-cache: true
