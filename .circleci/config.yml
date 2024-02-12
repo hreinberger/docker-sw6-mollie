@@ -57,7 +57,7 @@ jobs:
             docker build -t << pipeline.parameters.imgName >>:latest-amd64 --build-arg ARCH=linux/amd64 docker
             docker push << pipeline.parameters.imgName >>:latest-amd64
 
-  update-manifest:
+  build-manifest:
     machine:
       image: ubuntu-2204:current
       docker_layer_caching: true
