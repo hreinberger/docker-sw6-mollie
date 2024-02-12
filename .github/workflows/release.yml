@@ -11,20 +11,9 @@ env:
 
 jobs:
 
-  login:
-    name: Login to Docker Hub
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
   build:
     name: Build and push
     runs-on: ubuntu-latest
-    needs: login
     strategy:
       matrix:
         include:
@@ -43,6 +32,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build and push
         run: |
           docker build -t ${{ env.IMG_NAME }}-${{ matrix.name }} --build-arg ARCH=${{ matrix.platform }} docker
@@ -53,6 +48,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Create and push manifest ${{ env.IMG_NAME }}
         run: |
           docker manifest create ${{ env.IMG_NAME }} --amend ${{ env.IMG_NAME }}-amd64 --amend ${{ env.IMG_NAME }}-arm64
