@@ -8,5 +8,4 @@ sudo rm -rf /mollie
 sudo rm -rf /scripts
 
 # and finally clear the cache again
-sudo rm -rf /var/www/html/var/cache
 cd /var/www/html && php bin/console --no-debug cache:clear
