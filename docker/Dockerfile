@@ -8,7 +8,7 @@ ADD scripts /scripts
 ADD mollie_logs.json /var/www/pimpmylog/config.user.d/mollie_logs.json
 ADD mollie_entrypoint.sh /mollie_entrypoint.sh
 
-RUN sudo service mysql start || true; && \
+RUN sudo service mysql start || true && \
     sudo chown 33:33 /scripts -R && sudo chmod 775 /scripts -R && \
     sudo chown 33:33 /mollie -R && sudo chmod 775 /mollie -R && \
     # --------------------------------------------------------------------------------
