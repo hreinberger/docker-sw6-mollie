@@ -1,0 +1,75 @@
+version: 2.1
+
+
+parameters:
+  imgName:
+    type: string
+    default: "boxblinkracer/shopware6-mollie"
+
+workflows:
+
+  release_image:
+
+    jobs:
+      - build-arm64:
+          name: build-arm64
+      # ------------------------------------------------------------------------------------
+      - build-amd64:
+          name: build-amd64
+      # ------------------------------------------------------------------------------------
+      - build-manifest:
+          name: update-manifest
+          requires:
+            - build-arm64
+            - build-amd64
+
+jobs:
+
+  build-arm64:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - cmd_install
+      - run:
+          name: Docker Hub Login
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Build and push
+          command: |
+            docker build -t << pipeline.parameters.imgName >>:latest-arm64 --build-arg ARCH=linux/arm64 docker
+            docker push << pipeline.parameters.imgName >>:latest-arm64
+
+  build-amd64:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    resource_class: medium
+    steps:
+      - checkout
+      - cmd_install
+      - run:
+          name: Docker Hub Login
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Build and push
+          command: |
+            docker build -t << pipeline.parameters.imgName >>:latest-amd64 --build-arg ARCH=linux/amd64 docker
+            docker push << pipeline.parameters.imgName >>:latest-amd64
+
+  update-manifest:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    resource_class: medium
+    steps:
+      - run:
+          name: Docker Hub Login
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Create and push manifest
+          command: |
+            docker manifest create << pipeline.parameters.imgName >>:latest --amend << pipeline.parameters.imgName >>:latest-amd64 --amend << pipeline.parameters.imgName >>:latest-arm64
+            docker manifest push << pipeline.parameters.imgName >>:latest
