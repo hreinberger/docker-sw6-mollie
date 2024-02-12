@@ -27,9 +27,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Delete old Dockware image
-        run: docker rmi -f dockware/play:latest
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
