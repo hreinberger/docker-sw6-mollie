@@ -6,9 +6,10 @@
     * [2. Configure API Key](#2-configure-api-key)
     * [3. Start Checkout](#3-start-checkout)
     * [4. Plugin Logs](#4-plugin-logs)
-    * [5. Where to go from here](#5-where-to-go-from-here)
-    * [6. How it's built](#6-how-its-built)
-    * [7. Reliability](#7-reliability)
+    * [5. Environment Variables](#5-environment-variables)
+    * [6. Where to go from here](#6-where-to-go-from-here)
+    * [7. How it's built](#7-how-its-built)
+    * [8. Reliability](#8-reliability)
 <!-- TOC -->
 
 This is a ready to use showcase Docker image to play around with the Mollie plugin for Shopware 6.
@@ -62,12 +63,22 @@ In case of errors or problems, just open the url http://localhost/logs.
 In the center of the top navigation bar, just click on "Apache Access Logs" which is usually selected by default.
 This is a dropdown. Just select the Mollie logs and that's it.
 
-### 5. Where to go from here
+### 5. Environment Variables
+
+You can configure a few things and set some environment variables to change the behavior of the image.
+This can either be done as inline parameter or in a docker-compose file.
+
+| Environment Variable  | Description                                            |
+|-----------------------|--------------------------------------------------------|
+| MOLLIE_TEST_API_KEY   | Set the Mollie Test API key                            |
+| MOLLIE_WEBHOOK_DOMAIN | Sets a custom domain that Mollie will send webhooks to |
+
+### 6. Where to go from here
 
 If you want to learn more about the Mollie plugin for Shopware, head over
 to the official WIKI documentation: https://github.com/mollie/Shopware6/wiki
 
-### 6. How it's built
+### 7. How it's built
 
 This showcase image is built using https://dockware.io and the Shopware 6 plugin for Mollie.
 Every feature from dockware is part of this image.
@@ -75,7 +86,7 @@ Every feature from dockware is part of this image.
 The image is built every night, so you usually always have access to the latest Shopware version
 or Mollie version, once one of them is released.
 
-### 7. Reliability
+### 8. Reliability
 
 Although I'm one of the creators and maintainers of the Mollie plugins,
 this is a private and community project.
