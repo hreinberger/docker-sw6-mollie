@@ -15,10 +15,6 @@ RUN sudo service mysql start && \
     cd /scripts && sh prepare-store.sh && \
     cd /scripts && sh install-plugins.sh && \
     cd /scripts && sh run-fixtures.sh && \
-    # -------------------------------------------------------------------------------- \
-    # we set a custom webhook domain for the plugin, otherwise payments \
-    # with localhost do not work ;)
-    echo "MOLLIE_SHOP_DOMAIN=local.mollie.com" >> /var/www/html/.env && \
     # --------------------------------------------------------------------------------
 	cd /scripts && sh post-clean.sh && \
     sudo service mysql stop

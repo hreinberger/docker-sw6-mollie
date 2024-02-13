@@ -12,3 +12,4 @@ services:
       - "443:443"
     environment:
       - MOLLIE_API_KEY=test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      - MOLLIE_WEBHOOK_DOMAIN=local-test.mollie.com
