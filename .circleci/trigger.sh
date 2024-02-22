@@ -4,7 +4,7 @@
 cat <<EOT >> body.json
 {
   "parameters":
-      {´
+      {
       }
 }
 EOT
