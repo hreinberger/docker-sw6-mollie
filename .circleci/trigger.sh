@@ -3,10 +3,6 @@
 # export to temporary file to debug values
 cat <<EOT >> body.json
 {
-  "parameters":
-      {
-        "value": "any"
-      }
 }
 EOT
 
