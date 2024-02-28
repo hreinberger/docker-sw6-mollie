@@ -5,6 +5,7 @@ cat <<EOT >> body.json
 {
   "parameters":
       {
+        "value": "any"
       }
 }
 EOT
