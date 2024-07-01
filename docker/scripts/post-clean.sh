@@ -3,7 +3,6 @@
 cd /var/www/html && php bin/console --no-debug plugin:uninstall BasecomFixturePlugin
 
 # remove our temp folders
-sudo rm -rf /mollie
 sudo rm -rf /scripts
 
 # and finally clear the cache again
