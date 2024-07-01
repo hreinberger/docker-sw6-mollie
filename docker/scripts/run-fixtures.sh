@@ -1,8 +1,4 @@
 
-# copy our fixtures folder to our vendor folder
-# this is only necessary because the Mollie plugin does not come with fixtures in production right now
-mv /mollie/fixes/tests /var/www/html/vendor/store.shopware.com/molliepayments
-
 # little hack to allow fixtures auto-loading.
 # the mollie plugin checks if dev-deps are installed by checking for the phpunit binary.
 # only then, fixtures are available

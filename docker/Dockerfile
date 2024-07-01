@@ -1,9 +1,5 @@
 FROM dockware/play:latest
 
-# The tests folder is excluded at the moment
-# so we have a local backup and copy the fixtures to the container
-ADD tests /mollie/fixes/tests
-
 ADD scripts /scripts
 ADD mollie_logs.json /var/www/pimpmylog/config.user.d/mollie_logs.json
 ADD mollie_entrypoint.sh /mollie_entrypoint.sh
