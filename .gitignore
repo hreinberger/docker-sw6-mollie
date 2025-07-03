@@ -1,3 +1,6 @@
 /docker/.DS_Store
 .DS_Store
 /.idea
+.env
+logs
+docker/cert/*
