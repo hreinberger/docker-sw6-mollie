@@ -1,15 +1,56 @@
-version: "3.7"
-
 services:
+    shop:
+        container_name: shopware
+        restart: unless-stopped
+        extra_hosts:
+            - 'api.mollie.com:10.5.0.5'
+        build:
+            context: ./docker
+            dockerfile: Dockerfile
+        environment:
+            - TZ=Europe/Berlin
+            - SHOP_DOMAIN=${SHOP_DOMAIN}
+        volumes:
+            - 'db_volume:/var/lib/mysql'
+            - 'shop_volume:/var/www/html'
+            - ./logs:/var/www/html/var/log
+        networks:
+            shopware_net:
+    tunnel:
+        container_name: tunnel
+        restart: unless-stopped
+        image: cloudflare/cloudflared:latest
+        command: tunnel run
+        environment:
+            - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+            - TZ=Europe/Berlin
+        networks:
+            shopware_net:
+    mitmproxy:
+        container_name: mitmproxy
+        stdin_open: true
+        tty: true
+        ports:
+            - 9000:8080
+            - 0.0.0.0:9001:8081
+        image: mitmproxy/mitmproxy
+        volumes:
+            - ~/docker/mitmproxy/.mitmproxy:/home/mitmproxy/.mitmproxy
+        command: mitmweb --web-host 0.0.0.0 --mode reverse:https://api.mollie.com@443 --set web_password=mitm
+        networks:
+            shopware_net:
+                ipv4_address: 10.5.0.5
 
-  shop:
-    container_name: shopware
-    build:
-        context: ./docker
-        dockerfile: Dockerfile
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      - MOLLIE_API_KEY=test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      - MOLLIE_WEBHOOK_DOMAIN=local-test.mollie.com
+volumes:
+    db_volume:
+        driver: local
+    shop_volume:
+        driver: local
+
+networks:
+    shopware_net:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.5.0.0/16
+                  gateway: 10.5.0.1
